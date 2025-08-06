@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+  This is the active news.html page. 
+  It dynamically loads news stories from news.json using JavaScript. 
+  All updates should be made in the news.json file rather than directly editing this HTML. 
+-->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roundelay Farm - News</title>
+  <link rel="preload" href="images/front_yard_panos_animated_900x209.gif" as="image" />
+  <link rel="stylesheet" href="common.css" />
+</head>
+
+<body>
+
+  <div class="topnav">
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a class="active">News</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+  </div>
+
+  <img src="images/front_yard_panos_animated_900x209.gif" alt="Changing seasons" class="banner-image" />
+
+  <div class="page-fade">
+    <h1>Roundelay<sup>&#174;</sup> Farm News</h1>
+
+    <div id="news-container"></div>
+
+    <div class="footer">
+      Copyright &copy; 2023 Roundelay LLC
+    </div>
+  </div>
+
+  <script>
+    fetch('jsons/news.json')
+      .then(res => res.json())
+      .then(stories => {
+        const container = document.getElementById('news-container');
+
+        // Group stories by sortable ISO-style date
+        const grouped = {};
+        stories.forEach(story => {
+          if (!grouped[story.date]) {
+            grouped[story.date] = {
+              displayDate: story.displayDate,
+              stories: []
+            };
+          }
+          grouped[story.date].stories.push(story);
+        });
+
+        // Sort descending by date and render
+        Object.keys(grouped)
+          .sort((a, b) => b.localeCompare(a)) // '2023-06' > '2023-04'
+          .forEach(date => {
+            const group = grouped[date];
+            const section = document.createElement('section');
+            section.innerHTML = `<p class="news-date">${group.displayDate}</p>`;
+
+            group.stories.forEach((story, index) => {
+              const storyBlock = document.createElement('div');
+              storyBlock.className = 'news-story' + (index % 2 === 1 ? ' alt' : '');
+
+              storyBlock.innerHTML = `
+                <div class="news-image">
+                  <img src="${story.image}" alt="${story.title}">
+                  ${story.caption ? `<div class="caption">${story.caption}</div>` : ''}
+                </div>
+                <div class="news-text">
+                  <h2>${story.title}</h2>
+                  <p>${story.content}</p>
+                </div>
+              `;
+
+              section.appendChild(storyBlock);
+            });
+
+            container.appendChild(section);
+          });
+      })
+      .catch(err => {
+        console.error("Error loading news.json", err);
+        document.getElementById('news-container').innerHTML = "<p>Could not load news stories.</p>";
+      });
+  </script>
+
+</body>
+</html>

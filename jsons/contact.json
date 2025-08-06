@@ -1,0 +1,28 @@
+{
+  "phone": {
+    "main": "(919) 661-0018"
+  },
+  "email": {
+    "sales": "sales@roundelay.farm",
+    "general": "info@roundelay.farm"
+  },
+  "hours": {
+    "Monday": "9:00 AM – 5:00 PM",
+    "Tuesday": "9:00 AM – 5:00 PM",
+    "Wednesday": "9:00 AM – 12:00 PM",
+    "Thursday": "9:00 AM – 5:00 PM",
+    "Friday": "9:00 AM – 5:00 PM",
+    "Saturday": "10:00 AM – 2:00 PM",
+    "Sunday": "Closed"
+  },
+  "pickup": {
+    "description": "We typically meet customers at the Byrdstown Farmer’s Market near the Dale Hollow Lake Welcome Center.",
+    "address": "1005 Livingston Hwy, Byrdstown, TN",
+    "map": "https://goo.gl/maps/mymq2MxR69TFiXA49",
+    "embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2743.1299544383857!2d-85.13596568415833!3d36.569015679968736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8866b26c12fd8a0f%3A0xe8a725b24d9f6f9e!2s1005%20Livingston%20Hwy%2C%20Byrdstown%2C%20TN%2038515!5e0!3m2!1sen!2sus!4v1721902260000!5m2!1sen!2sus"
+  },
+  "social": {
+    "facebook": "https://www.facebook.com/RoundelayFarm/",
+    "instagram": ""
+  }
+}

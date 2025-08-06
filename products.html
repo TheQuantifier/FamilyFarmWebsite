@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roundelay Farm - Products</title>
+  <link rel="preload" href="images/front_yard_panos_animated_900x209.gif" as="image" />
+  <link rel="stylesheet" href="common.css" />
+</head>
+
+<body>
+  <div class="topnav">
+    <a href="index.html">Home</a>
+    <a class="active">Products</a>
+    <a href="news.html">News</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+  </div>
+
+  <img src="images/front_yard_panos_animated_900x209.gif" alt="Changing seasons" class="banner-image" />
+
+  <div class="page-fade">
+    <h1>Roundelay<sup>&#174;</sup> Farm Products</h1>
+
+    <p>
+      Roundelay Farm is proud to provide the following products to the local community in north-central Tennessee and south-central Kentucky!
+    </p>
+
+    <h2>How to Purchase</h2>
+
+    <p>
+      Just <a href="contact.html">contact us</a> and we will arrange to meet in person. We typically meet at the <strong>Byrdstown Farmer's Market</strong> beside the Dale Hollow Lake Welcome Center and Pickett County Chamber of Commerce,
+      <a href="https://goo.gl/maps/mymq2MxR69TFiXA49" target="_blank">located at 1005 Livingston Hwy</a> (also called Hwy 111), Byrdstown, TN.
+    </p>
+
+    <input type="text" id="product-search" placeholder="Search products..." class="product-search" />
+
+    <div id="products-container"></div>
+
+    <div class="footer">
+      Copyright &copy; 2023 Roundelay LLC
+    </div>
+  </div>
+
+  <script>
+    fetch('jsons/products.json')
+      .then(response => response.json())
+      .then(products => {
+        const container = document.getElementById('products-container');
+        const searchInput = document.getElementById('product-search');
+
+        const renderProducts = (filter = '') => {
+          container.innerHTML = '';
+
+          products
+            .filter(p =>
+              p.name.toLowerCase().includes(filter.toLowerCase()) ||
+              p.description.toLowerCase().includes(filter.toLowerCase())
+            )
+            .forEach((product, index) => {
+              const productDiv = document.createElement('div');
+              productDiv.className = 'product';
+
+              const slideshowId = `slideshow-${index}`;
+
+              productDiv.innerHTML = `
+                <div class="product-slideshow">
+                  <div class="slideshow-wrapper" id="${slideshowId}">
+                    <button class="slideshow-button prev-button">◀</button>
+                    <img src="${product.images[0].src}" alt="${product.name}" class="slide-image">
+                    <button class="slideshow-button next-button">▶</button>
+                    <div class="caption">${product.images[0].caption || ''}</div>
+                  </div>
+                </div>
+                <div class="product-text">
+                  <h2>${product.name}</h2>
+                  <p>${product.description}</p>
+                  <p><strong>Price:</strong> ${product.price}</p>
+                </div>
+              `;
+
+              container.appendChild(productDiv);
+
+              const slideshow = productDiv.querySelector(`#${slideshowId}`);
+              const img = slideshow.querySelector('.slide-image');
+              const prevBtn = slideshow.querySelector('.prev-button');
+              const nextBtn = slideshow.querySelector('.next-button');
+              const captionEl = slideshow.querySelector('.caption');
+
+              let currentIndex = 0;
+              const images = product.images;
+
+              const updateImage = () => {
+                img.src = images[currentIndex].src;
+                img.alt = `${product.name} (${currentIndex + 1} of ${images.length})`;
+                captionEl.textContent = images[currentIndex].caption || '';
+              };
+
+              prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                updateImage();
+              });
+
+              nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % images.length;
+                updateImage();
+              });
+            });
+        };
+
+        renderProducts();
+
+        searchInput.addEventListener('input', () => {
+          renderProducts(searchInput.value);
+        });
+      });
+  </script>
+</body>
+</html>

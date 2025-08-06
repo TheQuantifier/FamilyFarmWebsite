@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Apple Jelly",
+    "description": "We make our delicious Roundelay™ jellies from specific varieties of fruit from our orchard. So, for example, you can compare the taste of apple jelly made with different varieties of apples. It really makes a difference!<br><br>Two varieties of apple jelly are currently available:<ul><li>Golden Delicious</li><li>Fuji</li></ul>",
+    "price": "$12.00 per pint",
+    "images": [
+      {
+        "src": "images/Roundelay_jelly_1_1000x667.jpg",
+        "caption": "Front view of Golden Delicious left & Fuji right"
+      },
+      {
+        "src": "images/Roundelay_jelly_2_1000x667.jpg",
+        "caption": "Top view of Golden Delicious left & Fuji right"
+      }
+    ]
+  },
+  {
+    "name": "Pastured Poultry Eggs",
+    "description": "Brown and occasional blue/green eggs from our free-range chickens.",
+    "price": "$5.00 per dozen",
+    "images": [
+      {
+        "src": "images/rooster_profile_IMG_0735_1000x750.jpg",
+        "caption": "Proud rooster keeping watch"
+      },
+      {
+        "src": "images/rooster_and_hens_IMG_0730_1000x750.jpg",
+        "caption": "Rooster with hens"
+      },
+      {
+        "src": "images/strider_and_rooster_IMG_0786_1000x750.jpg",
+        "caption": "The flock and the Pyrenne"
+      }
+    ]
+  }
+]
