@@ -2,163 +2,220 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roundelay Farm - Contact</title>
+
+  <!-- SEO & Social -->
+  <meta name="description" content="Contact Roundelay Farm — phone, email, hours, pickup location, and a quick email form." />
+  <link rel="canonical" href="https://roundelay.farm/contact.html">
+  <meta property="og:title" content="Roundelay Farm — Contact" />
+  <meta property="og:description" content="Get in touch with Roundelay Farm in Byrdstown, TN." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="images/Roundelay_jelly_1_1000x667.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#6c8a4a" />
+
   <link rel="preload" href="images/front_yard_panos_animated_900x209.gif" as="image" />
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="common.css" />
 </head>
 
 <body>
-  <div class="topnav">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="topnav" aria-label="Primary">
     <a href="index.html">Home</a>
     <a href="products.html">Products</a>
     <a href="news.html">News</a>
-    <a class="active">Contact</a>
+    <a aria-current="page" class="active">Contact</a>
     <a href="about.html">About</a>
-  </div>
+  </nav>
 
-  <img src="images/front_yard_panos_animated_900x209.gif" alt="Changing seasons" class="banner-image" />
+  <!-- Motion-friendly banner -->
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="images/front_yard_panos_static_900x209.jpg" />
+    <img
+      src="images/front_yard_panos_animated_900x209.gif"
+      alt="Changing seasons at Roundelay Farm"
+      class="banner-image"
+      width="900"
+      height="209"
+      decoding="async"
+      fetchpriority="high"
+    />
+  </picture>
 
-  <div class="page-fade">
+  <main id="main" class="page-fade">
     <h1>Contact Roundelay<sup>&#174;</sup> Farm</h1>
 
-    <section class="contact-section" id="contact-section">
-      <!-- Content will be injected via JavaScript -->
+    <section class="contact-section" id="contact-section" aria-live="polite">
+      <!-- Content injected via JavaScript -->
     </section>
 
-    <div class="footer">
-      Copyright &copy; 2023 Roundelay LLC
-    </div>
-  </div>
+    <noscript>
+      <p style="text-align:center; padding: 0 20px 20px;">
+        JavaScript is required to load our contact details. Please enable JavaScript in your browser.
+      </p>
+    </noscript>
+
+    <footer class="footer" role="contentinfo">
+      &copy; 2023 Roundelay LLC &mdash; All rights reserved
+    </footer>
+  </main>
 
   <script>
+    // Keep mailto flow exactly as-is
     function handleEmailForm(event) {
       event.preventDefault();
-
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const message = document.getElementById("message").value.trim();
 
-      const subject = encodeURIComponent(`Website Inquiry from ${name}`);
+      const subject = encodeURIComponent(`Website Inquiry from ${name || 'Visitor'}`);
       const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
 
       window.location.href = `mailto:info@roundelay.farm?subject=${subject}&body=${body}`;
     }
 
-    fetch('jsons/contact.json')
-      .then(response => response.json())
+    fetch('jsons/contact.json', { cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to load contact.json');
+        return response.json();
+      })
       .then(data => {
         const section = document.getElementById('contact-section');
 
+        const safe = (v) => (v ?? '').toString().trim();
         const formatLabel = (key) =>
           key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
 
-        const phoneHTML = `
+        const phoneHTML = data.phone ? `
           <h2>Phone</h2>
           <ul>
             ${Object.entries(data.phone)
-              .filter(([_, number]) => number && number.trim() !== '')
-              .map(([key, number]) => `<li>${formatLabel(key)}: ${number}</li>`)
-              .join('\n')}
-          </ul>`;
+              .filter(([_, number]) => safe(number))
+              .map(([key, number]) => `<li>${formatLabel(key)}: ${safe(number)}</li>`)
+              .join('')}
+          </ul>` : '';
 
-        const emailHTML = `
+        const emailHTML = data.email ? `
           <h2>Email</h2>
           <ul>
             ${Object.entries(data.email)
-              .filter(([_, address]) => address && address.trim() !== '')
-              .map(([key, address]) => `<li>${formatLabel(key)}: <a href="mailto:${address}">${address}</a></li>`)
-              .join('\n')}
-          </ul>`;
+              .filter(([_, address]) => safe(address))
+              .map(([key, address]) => `<li>${formatLabel(key)}: <a href="mailto:${safe(address)}">${safe(address)}</a></li>`)
+              .join('')}
+          </ul>` : '';
 
+        // Stable weekday order regardless of JSON key order
+        const daysOrder = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
         const groupHours = (hoursObj) => {
-          const days = Object.keys(hoursObj);
-          const grouped = [];
-          let currentGroup = [];
+          if (!hoursObj) return '';
+          const days = daysOrder.filter(d => d in hoursObj);
+          if (!days.length) return '';
 
-          const sameTime = (a, b) => hoursObj[a] === hoursObj[b];
+          const grouped = [];
+          let current = [];
+
+          const sameTime = (a, b) => safe(hoursObj[a]) === safe(hoursObj[b]);
 
           for (let i = 0; i < days.length; i++) {
-            if (currentGroup.length === 0) {
-              currentGroup.push(days[i]);
-            } else if (sameTime(currentGroup[currentGroup.length - 1], days[i])) {
-              currentGroup.push(days[i]);
+            if (!current.length) {
+              current.push(days[i]);
+              continue;
+            }
+            if (sameTime(current[current.length - 1], days[i])) {
+              current.push(days[i]);
             } else {
-              grouped.push([...currentGroup]);
-              currentGroup = [days[i]];
+              grouped.push([...current]);
+              current = [days[i]];
             }
           }
-          if (currentGroup.length > 0) grouped.push([...currentGroup]);
+          if (current.length) grouped.push([...current]);
 
           return grouped.map(group => {
             const label = group.length === 1
               ? group[0]
               : `${group[0]} – ${group[group.length - 1]}`;
-            return `<li>${label}: ${hoursObj[group[0]]}</li>`;
-          }).join('\n');
+            return `<li>${label}: ${safe(hoursObj[group[0]]) || 'Closed'}</li>`;
+          }).join('');
         };
 
-        const hoursHTML = `
+        const hoursHTML = data.hours ? `
           <h2>Business Hours</h2>
           <ul>
             ${groupHours(data.hours)}
-          </ul>`;
+          </ul>` : '';
 
-        const pickupHTML = `
+        const pickup = data.pickup || {};
+        const pickupHTML = (pickup.address || pickup.embed || pickup.description) ? `
           <h2>Pickup Location</h2>
-          <p>${data.pickup.description}</p>
+          ${pickup.description ? `<p>${pickup.description}</p>` : ''}
+          ${pickup.address ? `
           <ul>
             <li>
-              Address: <a href="${data.pickup.map}" target="_blank">
-                ${data.pickup.address}</a>
+              Address: <a href="${safe(pickup.map)}" target="_blank" rel="noopener">
+                ${safe(pickup.address)}
+              </a>
             </li>
-          </ul>
+          </ul>` : ''}
+          ${pickup.embed ? `
           <div class="map-container">
             <iframe
-              src="${data.pickup.embed}"
+              src="${safe(pickup.embed)}"
               width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               title="Pickup Location Map">
             </iframe>
-          </div>`;
+          </div>` : ''}` : '';
 
         const formHTML = `
           <h2>Contact Form</h2>
-          <form class="contact-form" onsubmit="handleEmailForm(event)">
+          <form class="contact-form" onsubmit="handleEmailForm(event)" novalidate>
             <label for="name">Your Name:</label>
-            <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+            <input type="text" id="name" name="name" placeholder="Jane Doe" autocomplete="name" required />
+
             <label for="email">Your Email:</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+
             <label for="message">Message:</label>
             <textarea id="message" name="message" rows="5" placeholder="Type your message here..." required></textarea>
+
             <button type="submit">Send Message</button>
           </form>`;
 
         let socialHTML = '';
-        const socialPlatforms = Object.entries(data.social)
-          .filter(([_, url]) => url && url.trim() !== '');
+        if (data.social) {
+          const socialPlatforms = Object.entries(data.social)
+            .filter(([_, url]) => safe(url));
+          if (socialPlatforms.length) {
+            const links = socialPlatforms.map(([platform, url]) => {
+              const name = platform.charAt(0).toUpperCase() + platform.slice(1);
+              return `<a href="${safe(url)}" target="_blank" rel="noopener">${name}</a>`;
+            }).join('\n');
 
-        if (socialPlatforms.length > 0) {
-          const links = socialPlatforms.map(([platform, url]) => {
-            const name = platform.charAt(0).toUpperCase() + platform.slice(1);
-            return `<a href="${url}" target="_blank">${name}</a>`;
-          }).join('\n');
-
-          socialHTML = `
-            <h2>Follow Us</h2>
-            <div class="social-links" style="text-align: center; margin-top: 10px;">
-              ${links}
-            </div>`;
+            socialHTML = `
+              <h2>Follow Us</h2>
+              <div class="social-links" style="text-align: center; margin-top: 10px;">
+                ${links}
+              </div>`;
+          }
         }
 
         section.innerHTML = `
-          <p>If you have any questions about our products, events, or availability, please reach out to us using the methods below.</p>
+          <p>If you have any questions about our products, events, or availability, please reach out using the methods below.</p>
           ${phoneHTML}
           ${emailHTML}
           ${hoursHTML}
           ${pickupHTML}
           ${formHTML}
           ${socialHTML}`;
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('contact-section').innerHTML =
+          '<p style="text-align:center;">Sorry, we couldn’t load contact info right now. Please try again later.</p>';
       });
   </script>
 </body>

@@ -2,118 +2,210 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roundelay Farm - Products</title>
+
+  <!-- SEO & Social -->
+  <meta name="description" content="Browse Roundelay Farm products: seasonal jellies, fresh eggs, and more—available locally in Byrdstown, TN." />
+  <link rel="canonical" href="https://roundelay.farm/products.html">
+  <meta property="og:title" content="Roundelay Farm — Products" />
+  <meta property="og:description" content="Seasonal jellies, fresh eggs, and more." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="images/Roundelay_jelly_1_1000x667.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#6c8a4a" />
+
   <link rel="preload" href="images/front_yard_panos_animated_900x209.gif" as="image" />
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="common.css" />
 </head>
 
 <body>
-  <div class="topnav">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="topnav" aria-label="Primary">
     <a href="index.html">Home</a>
-    <a class="active">Products</a>
+    <a aria-current="page" class="active">Products</a>
     <a href="news.html">News</a>
     <a href="contact.html">Contact</a>
     <a href="about.html">About</a>
-  </div>
+  </nav>
 
-  <img src="images/front_yard_panos_animated_900x209.gif" alt="Changing seasons" class="banner-image" />
+  <!-- Motion-friendly banner: static image for reduced motion -->
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="images/front_yard_panos_static_900x209.jpg" />
+    <img
+      src="images/front_yard_panos_animated_900x209.gif"
+      alt="Changing seasons at Roundelay Farm"
+      class="banner-image"
+      width="900"
+      height="209"
+      decoding="async"
+      fetchpriority="high"
+    />
+  </picture>
 
-  <div class="page-fade">
+  <main id="main" class="page-fade">
     <h1>Roundelay<sup>&#174;</sup> Farm Products</h1>
 
     <p>
-      Roundelay Farm is proud to provide the following products to the local community in north-central Tennessee and south-central Kentucky!
+      Roundelay Farm is proud to provide the following products to the local community in north‑central Tennessee and south‑central Kentucky!
     </p>
 
     <h2>How to Purchase</h2>
 
     <p>
-      Just <a href="contact.html">contact us</a> and we will arrange to meet in person. We typically meet at the <strong>Byrdstown Farmer's Market</strong> beside the Dale Hollow Lake Welcome Center and Pickett County Chamber of Commerce,
-      <a href="https://goo.gl/maps/mymq2MxR69TFiXA49" target="_blank">located at 1005 Livingston Hwy</a> (also called Hwy 111), Byrdstown, TN.
+      Just <a href="contact.html">contact us</a> and we will arrange to meet in person. We typically meet at the
+      <strong>Byrdstown Farmer's Market</strong> beside the Dale Hollow Lake Welcome Center and Pickett County Chamber of Commerce,
+      <a href="https://goo.gl/maps/mymq2MxR69TFiXA49" target="_blank" rel="noopener">located at 1005 Livingston Hwy</a>
+      (also called Hwy 111), Byrdstown, TN.
     </p>
 
-    <input type="text" id="product-search" placeholder="Search products..." class="product-search" />
+    <label class="sr-only" for="product-search">Search products</label>
+    <input type="text" id="product-search" placeholder="Search products..." class="product-search" autocomplete="off" />
 
-    <div id="products-container"></div>
+    <p id="results-count" aria-live="polite" style="text-align:center; margin-top:-10px;"></p>
 
-    <div class="footer">
-      Copyright &copy; 2023 Roundelay LLC
-    </div>
-  </div>
+    <div id="products-container" aria-live="polite"></div>
+
+    <noscript>
+      <p style="text-align:center; padding: 0 20px 20px;">JavaScript is required to view products. Please enable JavaScript in your browser.</p>
+    </noscript>
+
+    <footer class="footer" role="contentinfo">
+      &copy; 2023 Roundelay LLC &mdash; All rights reserved
+    </footer>
+  </main>
 
   <script>
-    fetch('jsons/products.json')
-      .then(response => response.json())
-      .then(products => {
-        const container = document.getElementById('products-container');
-        const searchInput = document.getElementById('product-search');
+    (function () {
+      const container = document.getElementById('products-container');
+      const searchInput = document.getElementById('product-search');
+      const resultsCount = document.getElementById('results-count');
 
-        const renderProducts = (filter = '') => {
-          container.innerHTML = '';
+      // Utility: normalize string
+      const norm = (s) => (s || '').toString().toLowerCase().trim();
 
-          products
-            .filter(p =>
-              p.name.toLowerCase().includes(filter.toLowerCase()) ||
-              p.description.toLowerCase().includes(filter.toLowerCase())
-            )
-            .forEach((product, index) => {
-              const productDiv = document.createElement('div');
-              productDiv.className = 'product';
+      // Render one product card with slideshow
+      function productCard(product, index) {
+        const productDiv = document.createElement('section');
+        productDiv.className = 'product';
+        productDiv.setAttribute('aria-labelledby', `product-title-${index}`);
 
-              const slideshowId = `slideshow-${index}`;
+        const slideshowId = `slideshow-${index}`;
+        const first = product.images && product.images[0] ? product.images[0] : { src: '', caption: '' };
 
-              productDiv.innerHTML = `
-                <div class="product-slideshow">
-                  <div class="slideshow-wrapper" id="${slideshowId}">
-                    <button class="slideshow-button prev-button">◀</button>
-                    <img src="${product.images[0].src}" alt="${product.name}" class="slide-image">
-                    <button class="slideshow-button next-button">▶</button>
-                    <div class="caption">${product.images[0].caption || ''}</div>
-                  </div>
-                </div>
-                <div class="product-text">
-                  <h2>${product.name}</h2>
-                  <p>${product.description}</p>
-                  <p><strong>Price:</strong> ${product.price}</p>
-                </div>
-              `;
+        productDiv.innerHTML = `
+          <div class="product-slideshow">
+            <div class="slideshow-wrapper" id="${slideshowId}">
+              <button class="slideshow-button prev-button" aria-label="Previous image for ${product.name}" type="button">◀</button>
+              <img 
+                src="${first.src}" 
+                alt="${product.name}${first.caption ? ' — ' + first.caption : ''}" 
+                class="slide-image"
+                loading="lazy"
+                decoding="async"
+              >
+              <button class="slideshow-button next-button" aria-label="Next image for ${product.name}" type="button">▶</button>
+              <div class="caption">${first.caption || ''}</div>
+            </div>
+          </div>
+          <div class="product-text">
+            <h2 id="product-title-${index}">${product.name}</h2>
+            <p>${product.description}</p>
+            <p><strong>Price:</strong> ${product.price}</p>
+          </div>
+        `;
 
-              container.appendChild(productDiv);
+        // Wire slideshow
+        const slideshow = productDiv.querySelector('#' + slideshowId);
+        const img = slideshow.querySelector('.slide-image');
+        const prevBtn = slideshow.querySelector('.prev-button');
+        const nextBtn = slideshow.querySelector('.next-button');
+        const captionEl = slideshow.querySelector('.caption');
 
-              const slideshow = productDiv.querySelector(`#${slideshowId}`);
-              const img = slideshow.querySelector('.slide-image');
-              const prevBtn = slideshow.querySelector('.prev-button');
-              const nextBtn = slideshow.querySelector('.next-button');
-              const captionEl = slideshow.querySelector('.caption');
+        let currentIndex = 0;
+        const images = Array.isArray(product.images) ? product.images : [];
 
-              let currentIndex = 0;
-              const images = product.images;
+        function updateImage() {
+          if (!images.length) return;
+          const item = images[currentIndex];
+          img.src = item.src;
+          img.alt = `${product.name} (${currentIndex + 1} of ${images.length})${item.caption ? ' — ' + item.caption : ''}`;
+          captionEl.textContent = item.caption || '';
+        }
 
-              const updateImage = () => {
-                img.src = images[currentIndex].src;
-                img.alt = `${product.name} (${currentIndex + 1} of ${images.length})`;
-                captionEl.textContent = images[currentIndex].caption || '';
-              };
-
-              prevBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex - 1 + images.length) % images.length;
-                updateImage();
-              });
-
-              nextBtn.addEventListener('click', () => {
-                currentIndex = (currentIndex + 1) % images.length;
-                updateImage();
-              });
-            });
-        };
-
-        renderProducts();
-
-        searchInput.addEventListener('input', () => {
-          renderProducts(searchInput.value);
+        prevBtn.addEventListener('click', () => {
+          if (!images.length) return;
+          currentIndex = (currentIndex - 1 + images.length) % images.length;
+          updateImage();
         });
-      });
+
+        nextBtn.addEventListener('click', () => {
+          if (!images.length) return;
+          currentIndex = (currentIndex + 1) % images.length;
+          updateImage();
+        });
+
+        // Keyboard support via buttons already works; ensure first image is set
+        updateImage();
+
+        return productDiv;
+      }
+
+      // Render list
+      function renderProducts(products, filterText = '') {
+        container.innerHTML = '';
+        const q = norm(filterText);
+
+        const filtered = products.filter(p => {
+          const name = norm(p.name);
+          const desc = norm(p.description);
+          const captions = (p.images || []).map(img => norm(img.caption)).join(' ');
+          return (
+            name.includes(q) ||
+            desc.includes(q) ||
+            captions.includes(q)
+          );
+        });
+
+        resultsCount.textContent = q ? `${filtered.length} result${filtered.length === 1 ? '' : 's'} for “${filterText.trim()}”` : '';
+
+        filtered.forEach((product, i) => container.appendChild(productCard(product, i)));
+
+        if (filtered.length === 0) {
+          const empty = document.createElement('p');
+          empty.style.textAlign = 'center';
+          empty.textContent = 'No products match your search.';
+          container.appendChild(empty);
+        }
+      }
+
+      // Debounce input a bit for nicer typing
+      let t = null;
+      function onSearchInput() {
+        clearTimeout(t);
+        t = setTimeout(() => renderProducts(window.__products || [], searchInput.value), 120);
+      }
+
+      searchInput.addEventListener('input', onSearchInput);
+
+      // Fetch data
+      fetch('jsons/products.json', { cache: 'no-store' })
+        .then(r => {
+          if (!r.ok) throw new Error('Failed to load products.json');
+          return r.json();
+        })
+        .then(products => {
+          window.__products = products || [];
+          renderProducts(window.__products, '');
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = '<p style="text-align:center;">Sorry, we couldn’t load products right now. Please try again later.</p>';
+        });
+    })();
   </script>
 </body>
 </html>

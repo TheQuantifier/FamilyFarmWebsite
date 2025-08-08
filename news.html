@@ -1,49 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- 
-  This is the active news.html page. 
-  It dynamically loads news stories from news.json using JavaScript. 
-  All updates should be made in the news.json file rather than directly editing this HTML. 
--->
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roundelay Farm - News</title>
+
+  <!-- SEO & Social -->
+  <meta name="description" content="Roundelay Farm news and updates — see what’s happening on the farm." />
+  <link rel="canonical" href="https://roundelay.farm/news.html">
+  <meta property="og:title" content="Roundelay Farm — News" />
+  <meta property="og:description" content="See the latest news and updates from Roundelay Farm." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="images/Roundelay_jelly_1_1000x667.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#6c8a4a" />
+
   <link rel="preload" href="images/front_yard_panos_animated_900x209.gif" as="image" />
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="common.css" />
 </head>
 
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <div class="topnav">
+  <nav class="topnav" aria-label="Primary">
     <a href="index.html">Home</a>
     <a href="products.html">Products</a>
-    <a class="active">News</a>
+    <a aria-current="page" class="active">News</a>
     <a href="contact.html">Contact</a>
     <a href="about.html">About</a>
-  </div>
+  </nav>
 
-  <img src="images/front_yard_panos_animated_900x209.gif" alt="Changing seasons" class="banner-image" />
+  <!-- Motion-friendly banner -->
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="images/front_yard_panos_static_900x209.jpg" />
+    <img
+      src="images/front_yard_panos_animated_900x209.gif"
+      alt="Changing seasons at Roundelay Farm"
+      class="banner-image"
+      width="900"
+      height="209"
+      decoding="async"
+      fetchpriority="high"
+    />
+  </picture>
 
-  <div class="page-fade">
+  <main id="main" class="page-fade">
     <h1>Roundelay<sup>&#174;</sup> Farm News</h1>
 
-    <div id="news-container"></div>
+    <div id="news-container" aria-live="polite"></div>
 
-    <div class="footer">
-      Copyright &copy; 2023 Roundelay LLC
-    </div>
-  </div>
+    <noscript>
+      <p style="text-align:center; padding: 0 20px 20px;">JavaScript is required to view news stories. Please enable JavaScript in your browser.</p>
+    </noscript>
+
+    <footer class="footer" role="contentinfo">
+      &copy; 2023 Roundelay LLC &mdash; All rights reserved
+    </footer>
+  </main>
 
   <script>
-    fetch('jsons/news.json')
-      .then(res => res.json())
+    fetch('jsons/news.json', { cache: 'no-store' })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(stories => {
         const container = document.getElementById('news-container');
-
-        // Group stories by sortable ISO-style date
         const grouped = {};
+
         stories.forEach(story => {
           if (!grouped[story.date]) {
             grouped[story.date] = {
@@ -54,30 +80,35 @@
           grouped[story.date].stories.push(story);
         });
 
-        // Sort descending by date and render
         Object.keys(grouped)
-          .sort((a, b) => b.localeCompare(a)) // '2023-06' > '2023-04'
+          .sort((a, b) => b.localeCompare(a))
           .forEach(date => {
             const group = grouped[date];
             const section = document.createElement('section');
             section.innerHTML = `<p class="news-date">${group.displayDate}</p>`;
 
             group.stories.forEach((story, index) => {
-              const storyBlock = document.createElement('div');
-              storyBlock.className = 'news-story' + (index % 2 === 1 ? ' alt' : '');
+              const article = document.createElement('article');
+              article.className = 'news-story' + (index % 2 === 1 ? ' alt' : '');
+              article.setAttribute('aria-labelledby', `story-title-${date}-${index}`);
 
-              storyBlock.innerHTML = `
+              article.innerHTML = `
                 <div class="news-image">
-                  <img src="${story.image}" alt="${story.title}">
+                  <img 
+                    src="${story.image}" 
+                    alt="${story.title}${story.caption ? ' — ' + story.caption : ''}" 
+                    loading="lazy" 
+                    decoding="async"
+                  >
                   ${story.caption ? `<div class="caption">${story.caption}</div>` : ''}
                 </div>
                 <div class="news-text">
-                  <h2>${story.title}</h2>
+                  <h2 id="story-title-${date}-${index}">${story.title}</h2>
                   <p>${story.content}</p>
                 </div>
               `;
 
-              section.appendChild(storyBlock);
+              section.appendChild(article);
             });
 
             container.appendChild(section);
@@ -85,9 +116,9 @@
       })
       .catch(err => {
         console.error("Error loading news.json", err);
-        document.getElementById('news-container').innerHTML = "<p>Could not load news stories.</p>";
+        document.getElementById('news-container').innerHTML =
+          "<p style='text-align:center;'>Could not load news stories. Please try again later.</p>";
       });
   </script>
-
 </body>
 </html>

@@ -1,55 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roundelay Farm – About</title>
+
+  <!-- SEO & Social -->
+  <meta name="description" content="Learn about Roundelay Farm’s values and practices in the Highland Rim of the Cumberland Plateau, TN." />
+  <link rel="canonical" href="https://roundelay.farm/about.html">
+  <meta property="og:title" content="Roundelay Farm — About" />
+  <meta property="og:description" content="Our story, values, and regenerative practices." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="images/Roundelay_jelly_1_1000x667.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#6c8a4a" />
+
   <link rel="preload" href="images/front_yard_panos_animated_900x209.gif" as="image" />
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="common.css" />
 </head>
 
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <div class="topnav">
+  <nav class="topnav" aria-label="Primary">
     <a href="index.html">Home</a>
     <a href="products.html">Products</a>
     <a href="news.html">News</a>
     <a href="contact.html">Contact</a>
-    <a class="active">About</a>
-  </div>
+    <a aria-current="page" class="active">About</a>
+  </nav>
 
-  <img src="images/front_yard_panos_animated_900x209.gif" alt="Changing seasons" class="banner-image" />
+  <!-- Motion-friendly banner -->
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="images/front_yard_panos_static_900x209.jpg" />
+    <img
+      src="images/front_yard_panos_animated_900x209.gif"
+      alt="Changing seasons at Roundelay Farm"
+      class="banner-image"
+      width="900"
+      height="209"
+      decoding="async"
+      fetchpriority="high"
+    />
+  </picture>
 
-  <div class="page-fade">
+  <main id="main" class="page-fade">
     <h1>About Roundelay<sup>&#174;</sup> Farm</h1>
 
-    <p>
-      Roundelay Farm is a family farm in the beautiful Highland Rim of the Cumberland Plateau in TN. Roundelay refers to music, poetry, and dance. 
-      To us, Roundelay represents elegance with down-home simplicity, community, and harmony with the cycles of life!
-      We are committed to nurturing both land and community through the following guiding principles:
-    </p>
+    <section aria-labelledby="about-intro">
+      <h2 id="about-intro" class="subtitle" style="background:none; box-shadow:none; border:0; padding-top:0;">
+        Our story & values
+      </h2>
+      <p>
+        Roundelay Farm is a family farm in the beautiful Highland Rim of the Cumberland Plateau in Tennessee. “Roundelay”
+        refers to music, poetry, and dance— to us, it represents elegance with down‑home simplicity, community, and harmony
+        with the cycles of life. We’re committed to nurturing both land and community through the following guiding principles:
+      </p>
 
-    <ul>
-      <li>Biblical stewardship of land and resources</li>
-      <li>Regenerative agriculture practices</li>
-      <li>Management-Intensive Grazing (MIG)</li>
-      <li>
-        Adaptive Multi-Paddock (AMP) Grazing – a climate-resilient method featured in 
-        <a href="https://www.cnn.com/videos/us/2023/07/03/cattle-farming-climate-change-bill-weir-pkg-cnntm-contd-ldn-vpx.cnn" target="_blank" rel="noopener">this CNN video</a>
-      </li>
-    </ul>
+      <ul>
+        <li>Biblical stewardship of land and resources</li>
+        <li>Regenerative agriculture practices</li>
+        <li>Management‑Intensive Grazing (MIG)</li>
+        <li>
+          Adaptive Multi‑Paddock (AMP) Grazing — a climate‑resilient method featured in
+          <a href="https://www.cnn.com/videos/us/2023/07/03/cattle-farming-climate-change-bill-weir-pkg-cnntm-contd-ldn-vpx.cnn" target="_blank" rel="noopener">this CNN video</a>
+        </li>
+      </ul>
 
-    <p>
-      We take inspiration from <a href="https://polyfacefarms.com" target="_blank" rel="noopener">Polyface Farm</a>, a leader in sustainable farming,
-      as well as the book <a href="https://en.wikipedia.org/wiki/The_Omnivore%27s_Dilemma" target="_blank" rel="noopener"><em>The Omnivore’s Dilemma</em></a> by 
-      <a href="https://michaelpollan.com/books/the-omnivores-dilemma/" target="_blank" rel="noopener">Michael Pollan</a>.
-    </p>
+      <p>
+        We take inspiration from <a href="https://polyfacefarms.com" target="_blank" rel="noopener">Polyface Farm</a>, a leader in sustainable farming,
+        as well as the book <a href="https://en.wikipedia.org/wiki/The_Omnivore%27s_Dilemma" target="_blank" rel="noopener"><em>The Omnivore’s Dilemma</em></a> by
+        <a href="https://michaelpollan.com/books/the-omnivores-dilemma/" target="_blank" rel="noopener">Michael Pollan</a>.
+      </p>
+    </section>
 
-    <div class="footer">
-      Copyright &copy; 2023 Roundelay LLC
-    </div>
-  </div>
-
+    <footer class="footer" role="contentinfo">
+      &copy; 2023 Roundelay LLC &mdash; All rights reserved
+    </footer>
+  </main>
 </body>
 </html>
